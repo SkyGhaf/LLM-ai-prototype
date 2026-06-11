@@ -1,0 +1,16 @@
+=== Hotel Agent sessie gestart: 2026-06-11 14:02:42 ===
+
+
+================================================
+  Hotel Kamer Aanbeveling Agent -- Sprint 3
+  LangChain 1.x + Ollama (llama3.2:1b) + FAISS
+================================================
+Typ 'stop' of 'quit' om de sessie te beeindigen.
+
+Agent wordt geladen (vectorstore + model)...
+
+Bestaande vectorstore gevonden — wordt geladen...
+Embeddings model laden (eenmalig ~80MB download)...
+Agent klaar. Stel uw vraag hieronder.
+
+Gast: 
