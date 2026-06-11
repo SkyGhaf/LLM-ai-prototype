@@ -1,16 +1,96 @@
-=== Hotel Agent sessie gestart: 2026-06-11 14:02:42 ===
+=== Hotel Agent sessie gestart: 2026-06-11 14:46:53 ===
 
 
 ================================================
   Hotel Kamer Aanbeveling Agent -- Sprint 3
-  LangChain 1.x + Ollama (llama3.2:1b) + FAISS
+  LangChain + Ollama (llama3.2:1b) + FAISS
 ================================================
 Typ 'stop' of 'quit' om de sessie te beeindigen.
 
-Agent wordt geladen (vectorstore + model)...
+Agent wordt geladen (vectorstore + embeddings + model)...
 
 Bestaande vectorstore gevonden — wordt geladen...
 Embeddings model laden (eenmalig ~80MB download)...
-Agent klaar. Stel uw vraag hieronder.
+Agent klaar! Begin het gesprek (bijv. 'Hallo, ik zoek een kamer').
+
+Gast: 
+Agent: Welkom! Wat fijn dat u bij ons hotel een kamer zoekt. Voor hoeveel personen zoekt u een kamer?
+
+Gast: 
+Agent: Wat is uw maximale budget per nacht (in euro)?
+
+Gast: 
+Agent: Wilt u ontbijt inbegrepen? (ja/nee)
+
+Gast: 
+Agent: Heeft u een parkeerplaats nodig? (ja/nee)
+
+Gast: 
+Agent: Heeft u een voorkeurslocatie? (bijv. Den Haag, Amsterdam, of 'geen voorkeur')
+
+Gast: 
+Agent: Dank u wel! Samengevat zoekt u: 2 persoon/personen, max EUR 120/nacht, met ontbijt, met parkeerplaats, in Den Haag.
+
+Op basis van uw wensen (2 persoon/personen, max EUR 120/nacht, met ontbijt, met parkeerplaats, in Den Haag):
+
+Top 3 aanbevolen kamers:
+
+------------------------------------------
+1. Standaard Kamer met Ontbijt
+   Locatie   : Den Haag Scheveningen
+   Prijs     : EUR 105/nacht
+   Capaciteit: 2 persoon/personen
+   Ontbijt   : Inbegrepen
+   Parkeren  : Beschikbaar
+   Huisdieren: Niet toegestaan
+   Info      : Lichte tweepersoonskamer met prachtig uitzicht op de duinen van Scheveningen. Inclusief uitgebreid ontbijt, gratis parke...
+
+Validatie: [OK] Aanbeveling geldig: 'Standaard Kamer met Ontbijt' (EUR 105/nacht, 2 pers.) in Den Haag Scheveningen.
+
+Bent u tevreden met deze aanbevelingen? Of wilt u iets aanpassen (bijv. 'te duur', 'liever met ontbijt')?
+
+Gast: 
+Agent: Ik pas uw wensen aan en zoek opnieuw...
+
+Geen kamers gevonden met deze criteria. Overweeg het budget te verhogen of andere filters te verruimen.
+
+U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'.
+
+Gast: 
+Agent: Ik begrijp uw wens nog niet helemaal. Kunt u aangeven wat u wilt aanpassen? Bijvoorbeeld: 'maximaal 100 euro' of 'liever in Amsterdam'.
+
+Gast: 
+Agent: Ik pas uw wensen aan en zoek opnieuw...
+
+Geen kamers gevonden met deze criteria. Overweeg het budget te verhogen of andere filters te verruimen.
+
+U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'.
+
+Gast: 
+Agent: Ik pas uw wensen aan en zoek opnieuw...
+
+Op basis van uw wensen (2 persoon/personen, max EUR 120/nacht, met ontbijt, met parkeerplaats, in Den Haag):
+
+Top 3 aanbevolen kamers:
+
+------------------------------------------
+1. Standaard Kamer met Ontbijt
+   Locatie   : Den Haag Scheveningen
+   Prijs     : EUR 105/nacht
+   Capaciteit: 2 persoon/personen
+   Ontbijt   : Inbegrepen
+   Parkeren  : Beschikbaar
+   Huisdieren: Niet toegestaan
+   Info      : Lichte tweepersoonskamer met prachtig uitzicht op de duinen van Scheveningen. Inclusief uitgebreid ontbijt, gratis parke...
+
+Validatie: [OK] Aanbeveling geldig: 'Standaard Kamer met Ontbijt' (EUR 105/nacht, 2 pers.) in Den Haag Scheveningen.
+
+Bent u tevreden met deze aanbevelingen? Of wilt u iets aanpassen (bijv. 'te duur', 'liever met ontbijt')?
+
+Gast: 
+Agent: Wat fijn! U kunt de kamer aan de balie of telefonisch reserveren. Nog een prettige dag en graag tot ziens!
+
+Gast: 
+Agent: Ik begrijp uw wens nog niet helemaal. Kunt u aangeven wat u wilt aanpassen? Bijvoorbeeld: 'maximaal 100 euro' of 'liever in Amsterdam'.
 
 Gast: 

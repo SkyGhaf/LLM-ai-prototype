@@ -41,6 +41,8 @@ def filter_kamers(criteria: str) -> str:
     Geeft een JSON-lijst van passende kamers terug.
     """
     criteria_dict = _parse_criteria(criteria)
+    # Verwijder null-waarden (kleine modellen geven die soms mee)
+    criteria_dict = {k: v for k, v in criteria_dict.items() if v is not None}
 
     # Semantische zoekopdracht via vectorstore (als query meegegeven is)
     if _vectorstore is not None and "query" in criteria_dict:
@@ -55,15 +57,14 @@ def filter_kamers(criteria: str) -> str:
         gefilterd = [r for r in gefilterd if r["prijs_per_nacht"] <= int(criteria_dict["max_prijs"])]
     if "min_prijs" in criteria_dict:
         gefilterd = [r for r in gefilterd if r["prijs_per_nacht"] >= int(criteria_dict["min_prijs"])]
-    if "ontbijt" in criteria_dict:
-        gewenst = bool(criteria_dict["ontbijt"])
-        gefilterd = [r for r in gefilterd if r["ontbijt"] == gewenst]
-    if "parkeren" in criteria_dict:
-        gewenst = bool(criteria_dict["parkeren"])
-        gefilterd = [r for r in gefilterd if r["parkeren"] == gewenst]
-    if "huisdieren" in criteria_dict:
-        gewenst = bool(criteria_dict["huisdieren"])
-        gefilterd = [r for r in gefilterd if r["huisdieren"] == gewenst]
+    # Bool-criteria werken als harde eis bij 'true' en als 'geen voorkeur' bij 'false'
+    # (een gast die geen ontbijt hoeft, vindt een kamer mét ontbijt ook prima)
+    if criteria_dict.get("ontbijt"):
+        gefilterd = [r for r in gefilterd if r["ontbijt"]]
+    if criteria_dict.get("parkeren"):
+        gefilterd = [r for r in gefilterd if r["parkeren"]]
+    if criteria_dict.get("huisdieren"):
+        gefilterd = [r for r in gefilterd if r["huisdieren"]]
     if "capaciteit" in criteria_dict:
         gewenst = int(criteria_dict["capaciteit"])
         gefilterd = [r for r in gefilterd if r["capaciteit"] >= gewenst]

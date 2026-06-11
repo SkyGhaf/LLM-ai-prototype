@@ -1,2 +1,150 @@
 14:02:42 [INFO] Sessie gestart
 14:02:57 [INFO] GAST: Hallo, ik zoek een kamer voor 2 personen
+14:34:24 [INFO] Sessie gestart
+14:34:55 [INFO] GAST: Hallo, ik zoek een kamer voor 2 personen in Rotterdam
+14:34:55 [INFO] Fase: begroeting | Criteria: {}
+14:34:55 [INFO] LLM-extractie gestart voor: 'Hallo, ik zoek een kamer voor 2 personen in Rotterdam'
+14:35:05 [INFO] LLM-extractie resultaat (gevalideerd): {'capaciteit': 2, 'locatie': 'Rotterdam'}
+14:35:05 [INFO] AGENT: Welkom! Wat fijn dat u bij ons hotel een kamer zoekt. Ik heb genoteerd: 2 persoon/personen, in Rotterdam. Wat is uw maximale budget per nacht (in euro)?
+14:35:05 [INFO] GAST: 2
+14:35:05 [INFO] Fase: vragen | Criteria: {'capaciteit': 2, 'locatie': 'Rotterdam'}
+14:35:05 [INFO] AGENT: Wilt u ontbijt inbegrepen? (ja/nee)
+14:35:05 [INFO] GAST: 130 euro
+14:35:05 [INFO] Fase: vragen | Criteria: {'capaciteit': 2, 'locatie': 'Rotterdam'}
+14:35:05 [INFO] AGENT: Heeft u een parkeerplaats nodig? (ja/nee)
+14:35:05 [INFO] GAST: ja
+14:35:05 [INFO] Fase: vragen | Criteria: {'capaciteit': 2, 'locatie': 'Rotterdam', 'max_prijs': 130}
+14:35:05 [INFO] TOOL filter_kamers aangeroepen met: {"capaciteit": 2, "locatie": "Rotterdam", "max_prijs": 130, "parkeren": true}
+14:35:05 [INFO] filter_kamers: geen resultaten
+14:35:05 [INFO] AGENT: Dank u wel! Samengevat zoekt u: 2 persoon/personen, max EUR 130/nacht, met parkeerplaats, in Rotterdam.
+
+Geen kamers gevonden met deze criteria. Overweeg het budget te verhogen of andere filters te verruimen.
+
+U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'.
+14:35:05 [INFO] GAST: ja
+14:35:05 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'locatie': 'Rotterdam', 'max_prijs': 130, 'parkeren': True}
+14:35:05 [INFO] LLM-extractie gestart voor: 'ja'
+14:35:12 [INFO] LLM-extractie resultaat (gevalideerd): {}
+14:35:12 [INFO] AGENT: Ik begrijp uw wens nog niet helemaal. Kunt u aangeven wat u wilt aanpassen? Bijvoorbeeld: 'maximaal 100 euro' of 'liever in Amsterdam'.
+14:35:12 [INFO] GAST: Rotterdam
+14:35:12 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'locatie': 'Rotterdam', 'max_prijs': 130, 'parkeren': True}
+14:35:12 [INFO] LLM-extractie gestart voor: 'Rotterdam'
+14:35:19 [INFO] LLM-extractie resultaat (gevalideerd): {'locatie': 'Rotterdam'}
+14:35:19 [INFO] FEEDBACKLOOP: criteria bijgesteld met {'locatie': 'Rotterdam'}
+14:35:19 [INFO] TOOL filter_kamers aangeroepen met: {"capaciteit": 2, "locatie": "Rotterdam", "max_prijs": 130, "parkeren": true}
+14:35:19 [INFO] filter_kamers: geen resultaten
+14:35:19 [INFO] AGENT: Ik pas uw wensen aan en zoek opnieuw...
+
+Geen kamers gevonden met deze criteria. Overweeg het budget te verhogen of andere filters te verruimen.
+
+U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'.
+14:35:19 [INFO] Sessie beeindigd door gebruiker
+14:46:53 [INFO] Sessie gestart
+14:47:18 [INFO] GAST: Hallo, ik zoek een kamer
+14:47:18 [INFO] Fase: begroeting | Criteria: {}
+14:47:18 [INFO] LLM-extractie gestart voor: 'Hallo, ik zoek een kamer'
+14:47:28 [INFO] LLM-extractie resultaat (gevalideerd): {}
+14:47:28 [INFO] AGENT: Welkom! Wat fijn dat u bij ons hotel een kamer zoekt. Voor hoeveel personen zoekt u een kamer?
+14:47:44 [INFO] GAST: 2
+14:47:44 [INFO] Fase: vragen | Criteria: {}
+14:47:44 [INFO] AGENT: Wat is uw maximale budget per nacht (in euro)?
+14:47:52 [INFO] GAST: 120
+14:47:52 [INFO] Fase: vragen | Criteria: {'capaciteit': 2}
+14:47:52 [INFO] AGENT: Wilt u ontbijt inbegrepen? (ja/nee)
+14:48:04 [INFO] GAST: ja
+14:48:04 [INFO] Fase: vragen | Criteria: {'capaciteit': 2, 'max_prijs': 120}
+14:48:04 [INFO] AGENT: Heeft u een parkeerplaats nodig? (ja/nee)
+14:48:07 [INFO] GAST: ja
+14:48:07 [INFO] Fase: vragen | Criteria: {'capaciteit': 2, 'max_prijs': 120, 'ontbijt': True}
+14:48:07 [INFO] AGENT: Heeft u een voorkeurslocatie? (bijv. Den Haag, Amsterdam, of 'geen voorkeur')
+14:48:33 [INFO] GAST: Den Haag
+14:48:33 [INFO] Fase: vragen | Criteria: {'capaciteit': 2, 'max_prijs': 120, 'ontbijt': True, 'parkeren': True}
+14:48:33 [INFO] TOOL filter_kamers aangeroepen met: {"capaciteit": 2, "max_prijs": 120, "ontbijt": true, "parkeren": true, "locatie": "Den Haag"}
+14:48:33 [INFO] TOOL rangschik_kamers aangeroepen
+14:48:33 [INFO] TOOL valideer_aanbeveling aangeroepen
+14:48:33 [INFO] Validatie-uitkomst: [OK] Aanbeveling geldig: 'Standaard Kamer met Ontbijt' (EUR 105/nacht, 2 pers.) in Den Haag Scheveningen.
+14:48:33 [INFO] AGENT: Dank u wel! Samengevat zoekt u: 2 persoon/personen, max EUR 120/nacht, met ontbijt, met parkeerplaats, in Den Haag.
+
+Op basis van uw wensen (2 persoon/personen, max EUR 120/nacht, met ontbijt, met parkeerplaats, in Den Haag):
+
+Top 3 aanbevolen kamers:
+
+------------------------------------------
+1. Standaard Kamer met Ontbijt
+   Locatie   : Den Haag Scheveningen
+   Prijs     : EUR 105/nacht
+   Capaciteit: 2 persoon/personen
+   Ontbijt   : Inbegrepen
+   Parkeren  : Beschikbaar
+   Huisdieren: Niet toegestaan
+   Info      : Lichte tweepersoonskamer met prachtig uitzicht op de duinen van Scheveningen. Inclusief uitgebreid ontbijt, gratis parke...
+
+Validatie: [OK] Aanbeveling geldig: 'Standaard Kamer met Ontbijt' (EUR 105/nacht, 2 pers.) in Den Haag Scheveningen.
+
+Bent u tevreden met deze aanbevelingen? Of wilt u iets aanpassen (bijv. 'te duur', 'liever met ontbijt')?
+14:49:00 [INFO] GAST: te duur
+14:49:00 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'max_prijs': 120, 'ontbijt': True, 'parkeren': True, 'locatie': 'Den Haag'}
+14:49:00 [INFO] LLM-extractie gestart voor: 'te duur'
+14:49:03 [INFO] LLM-extractie resultaat (gevalideerd): {}
+14:49:03 [INFO] FEEDBACKLOOP: criteria bijgesteld met {'max_prijs': 96}
+14:49:03 [INFO] TOOL filter_kamers aangeroepen met: {"capaciteit": 2, "max_prijs": 96, "ontbijt": true, "parkeren": true, "locatie": "Den Haag"}
+14:49:03 [INFO] filter_kamers: geen resultaten
+14:49:03 [INFO] AGENT: Ik pas uw wensen aan en zoek opnieuw...
+
+Geen kamers gevonden met deze criteria. Overweeg het budget te verhogen of andere filters te verruimen.
+
+U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'.
+14:49:46 [INFO] GAST: is dit het goedkopste wat je kan doen
+14:49:46 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'max_prijs': 96, 'ontbijt': True, 'parkeren': True, 'locatie': 'Den Haag'}
+14:49:46 [INFO] LLM-extractie gestart voor: 'is dit het goedkopste wat je kan doen'
+14:49:48 [INFO] LLM-extractie resultaat (gevalideerd): {}
+14:49:48 [INFO] AGENT: Ik begrijp uw wens nog niet helemaal. Kunt u aangeven wat u wilt aanpassen? Bijvoorbeeld: 'maximaal 100 euro' of 'liever in Amsterdam'.
+14:50:09 [INFO] GAST: maximaal 100 euro
+14:50:09 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'max_prijs': 96, 'ontbijt': True, 'parkeren': True, 'locatie': 'Den Haag'}
+14:50:09 [INFO] LLM-extractie gestart voor: 'maximaal 100 euro'
+14:50:10 [INFO] LLM-extractie resultaat (gevalideerd): {'max_prijs': 100}
+14:50:10 [INFO] FEEDBACKLOOP: criteria bijgesteld met {'max_prijs': 100}
+14:50:10 [INFO] TOOL filter_kamers aangeroepen met: {"capaciteit": 2, "max_prijs": 100, "ontbijt": true, "parkeren": true, "locatie": "Den Haag"}
+14:50:10 [INFO] filter_kamers: geen resultaten
+14:50:10 [INFO] AGENT: Ik pas uw wensen aan en zoek opnieuw...
+
+Geen kamers gevonden met deze criteria. Overweeg het budget te verhogen of andere filters te verruimen.
+
+U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'.
+14:50:27 [INFO] GAST: verhoog mijn budget weer naar 120
+14:50:27 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'max_prijs': 100, 'ontbijt': True, 'parkeren': True, 'locatie': 'Den Haag'}
+14:50:27 [INFO] LLM-extractie gestart voor: 'verhoog mijn budget weer naar 120'
+14:50:30 [INFO] LLM-extractie resultaat (gevalideerd): {'max_prijs': 120}
+14:50:30 [INFO] FEEDBACKLOOP: criteria bijgesteld met {'max_prijs': 120}
+14:50:30 [INFO] TOOL filter_kamers aangeroepen met: {"capaciteit": 2, "max_prijs": 120, "ontbijt": true, "parkeren": true, "locatie": "Den Haag"}
+14:50:30 [INFO] TOOL rangschik_kamers aangeroepen
+14:50:30 [INFO] TOOL valideer_aanbeveling aangeroepen
+14:50:30 [INFO] Validatie-uitkomst: [OK] Aanbeveling geldig: 'Standaard Kamer met Ontbijt' (EUR 105/nacht, 2 pers.) in Den Haag Scheveningen.
+14:50:30 [INFO] AGENT: Ik pas uw wensen aan en zoek opnieuw...
+
+Op basis van uw wensen (2 persoon/personen, max EUR 120/nacht, met ontbijt, met parkeerplaats, in Den Haag):
+
+Top 3 aanbevolen kamers:
+
+------------------------------------------
+1. Standaard Kamer met Ontbijt
+   Locatie   : Den Haag Scheveningen
+   Prijs     : EUR 105/nacht
+   Capaciteit: 2 persoon/personen
+   Ontbijt   : Inbegrepen
+   Parkeren  : Beschikbaar
+   Huisdieren: Niet toegestaan
+   Info      : Lichte tweepersoonskamer met prachtig uitzicht op de duinen van Scheveningen. Inclusief uitgebreid ontbijt, gratis parke...
+
+Validatie: [OK] Aanbeveling geldig: 'Standaard Kamer met Ontbijt' (EUR 105/nacht, 2 pers.) in Den Haag Scheveningen.
+
+Bent u tevreden met deze aanbevelingen? Of wilt u iets aanpassen (bijv. 'te duur', 'liever met ontbijt')?
+14:53:43 [INFO] GAST: ja ik ben tevreden
+14:53:43 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'max_prijs': 120, 'ontbijt': True, 'parkeren': True, 'locatie': 'Den Haag'}
+14:53:43 [INFO] Gast tevreden — workflow afgerond
+14:53:43 [INFO] AGENT: Wat fijn! U kunt de kamer aan de balie of telefonisch reserveren. Nog een prettige dag en graag tot ziens!
+14:53:51 [INFO] GAST: tot ziens
+14:53:51 [INFO] Fase: feedback | Criteria: {'capaciteit': 2, 'max_prijs': 120, 'ontbijt': True, 'parkeren': True, 'locatie': 'Den Haag'}
+14:53:51 [INFO] LLM-extractie gestart voor: 'tot ziens'
+14:53:54 [INFO] LLM-extractie resultaat (gevalideerd): {}
+14:53:54 [INFO] AGENT: Ik begrijp uw wens nog niet helemaal. Kunt u aangeven wat u wilt aanpassen? Bijvoorbeeld: 'maximaal 100 euro' of 'liever in Amsterdam'.
