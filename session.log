@@ -148,3 +148,9 @@ Bent u tevreden met deze aanbevelingen? Of wilt u iets aanpassen (bijv. 'te duur
 14:53:51 [INFO] LLM-extractie gestart voor: 'tot ziens'
 14:53:54 [INFO] LLM-extractie resultaat (gevalideerd): {}
 14:53:54 [INFO] AGENT: Ik begrijp uw wens nog niet helemaal. Kunt u aangeven wat u wilt aanpassen? Bijvoorbeeld: 'maximaal 100 euro' of 'liever in Amsterdam'.
+15:01:30 [INFO] Sessie gestart
+15:03:27 [INFO] GAST: ik zoek een kamer
+15:03:27 [INFO] Fase: begroeting | Criteria: {}
+15:03:27 [INFO] LLM-extractie gestart voor: 'ik zoek een kamer'
+15:03:41 [INFO] LLM-extractie resultaat (gevalideerd): {}
+15:03:41 [INFO] AGENT: Welkom! Wat fijn dat u bij ons hotel een kamer zoekt. Voor hoeveel personen zoekt u een kamer?

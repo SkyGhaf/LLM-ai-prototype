@@ -4,7 +4,9 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 FAISS_PATH = "faiss_index"
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+# Meertalig model: noodzakelijk omdat de kamerbeschrijvingen en zoekopdrachten
+# Nederlands zijn (het Engelstalige all-MiniLM-L6-v2 gaf willekeurige resultaten)
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 _embeddings = None
 

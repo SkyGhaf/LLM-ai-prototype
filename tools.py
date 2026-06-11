@@ -44,12 +44,16 @@ def filter_kamers(criteria: str) -> str:
     # Verwijder null-waarden (kleine modellen geven die soms mee)
     criteria_dict = {k: v for k, v in criteria_dict.items() if v is not None}
 
-    # Semantische zoekopdracht via vectorstore (als query meegegeven is)
+    # Semantische zoekopdracht via vectorstore (als query meegegeven is).
+    # De volgorde van de resultaten is de relevantie-rangorde.
     if _vectorstore is not None and "query" in criteria_dict:
         from vectorstore import semantic_search
-        semantic_ids = {r["id"] for r in semantic_search(_vectorstore, criteria_dict["query"], k=8)}
+        semantic_rang = {
+            r["id"]: rang
+            for rang, r in enumerate(semantic_search(_vectorstore, criteria_dict["query"], k=15), 1)
+        }
     else:
-        semantic_ids = None
+        semantic_rang = None
 
     gefilterd = list(ROOMS)
 
@@ -75,9 +79,15 @@ def filter_kamers(criteria: str) -> str:
         zoekterm = criteria_dict["type"].lower()
         gefilterd = [r for r in gefilterd if zoekterm in r["type"].lower()]
 
-    # Pas semantische filtering toe als query was opgegeven
-    if semantic_ids is not None:
-        semantisch_gefilterd = [r for r in gefilterd if r["id"] in semantic_ids]
+    # Pas semantische filtering toe als query was opgegeven: alleen relevante
+    # kamers, gesorteerd op relevantie, met de rang als veld zodat
+    # rangschik_kamers de volgorde kan respecteren
+    if semantic_rang is not None:
+        semantisch_gefilterd = [
+            {**r, "relevantie": semantic_rang[r["id"]]}
+            for r in gefilterd if r["id"] in semantic_rang
+        ]
+        semantisch_gefilterd.sort(key=lambda r: r["relevantie"])
         # Gebruik semantisch resultaat als het niet leeg is; anders fallback op structureel gefilterd
         gefilterd = semantisch_gefilterd if semantisch_gefilterd else gefilterd
 
@@ -107,8 +117,12 @@ def rangschik_kamers(kamers_json: str) -> str:
     if not kamers:
         return "Geen kamers beschikbaar om te rangschikken."
 
-    # Sorteer op prijs (laag naar hoog), dan op capaciteit (hoog naar laag)
-    gesorteerd = sorted(kamers, key=lambda k: (k.get("prijs_per_nacht", 9999), -k.get("capaciteit", 0)))
+    # Sorteer op semantische relevantie (indien aanwezig), dan op prijs
+    # (laag naar hoog), dan op capaciteit (hoog naar laag)
+    gesorteerd = sorted(
+        kamers,
+        key=lambda k: (k.get("relevantie", 999), k.get("prijs_per_nacht", 9999), -k.get("capaciteit", 0)),
+    )
     top3 = gesorteerd[:3]
 
     regels = ["Top 3 aanbevolen kamers:\n"]
