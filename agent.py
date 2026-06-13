@@ -18,7 +18,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
 import tools as tools_module
-from tools import filter_kamers, rangschik_kamers, valideer_aanbeveling
+from tools import filter_kamers, rangschik_kamers, valideer_aanbeveling, suggereer_alternatief
 from vectorstore import get_or_build_vectorstore
 from rooms_data import ROOMS
 
@@ -352,8 +352,11 @@ class HotelAgent:
 
         if gevonden.startswith("Geen kamers"):
             logger.info("filter_kamers: geen resultaten")
+            logger.info("TOOL suggereer_alternatief aangeroepen (geen resultaten)")
+            suggestie = suggereer_alternatief.invoke(criteria_json)
+            tip = f"\n\n{suggestie}" if suggestie else ""
             return (
-                f"{gevonden}\n\n"
+                f"{gevonden}{tip}\n\n"
                 "U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'."
             )
 
@@ -368,8 +371,15 @@ class HotelAgent:
             return f"Er ging iets mis bij het valideren van de aanbeveling: {validatie}"
 
         self.laatste_resultaat = top3
+
+        # Zachte upsell: een net iets luxere kamer boven het budget aanbevelen
+        logger.info("TOOL suggereer_alternatief aangeroepen (upsell)")
+        suggestie = suggereer_alternatief.invoke(criteria_json)
+        upsell = f"{suggestie}\n\n" if suggestie else ""
+
         return (
             f"Op basis van uw wensen ({self._samenvatting()}):\n\n{top3}\n"
+            f"{upsell}"
             f"Validatie: {validatie}\n\n"
             "Bent u tevreden met deze aanbevelingen? "
             "Of wilt u iets aanpassen (bijv. 'te duur', 'liever met ontbijt')?"

@@ -100,6 +100,103 @@ def filter_kamers(criteria: str) -> str:
     return json.dumps(gefilterd[:10], ensure_ascii=False, indent=2)
 
 
+# Aantrekkelijke kenmerken die we als 'highlight' in een aanbeveling noemen.
+# Volgorde = prioriteit: het eerste kenmerk dat in de beschrijving voorkomt wint.
+_HIGHLIGHTS = [
+    ("met heerlijk bosuitzicht",
+     ("bosuitzicht", "bosrijk", "bossen", "veluwe")),
+    ("met uitzicht over het water",
+     ("aan het water", "over het water", "over de maas", "oude rijn", "alkmaardermeer",
+      "weerwater", "ijsselmeer", "friese meren", "het meer", "aan het alkmaardermeer")),
+    ("met uitzicht over de skyline",
+     ("skyline",)),
+    ("met een eigen skybar en weids uitzicht",
+     ("skybar",)),
+    ("een sfeervol kasteelhotel op eigen landgoed",
+     ("kasteel",)),
+    ("met uitzicht over het Limburgse heuvelland",
+     ("heuvelland",)),
+    ("met weids polderuitzicht",
+     ("polder",)),
+    ("midden in de natuur, heerlijk rustig",
+     ("nationaal park", "natuur", "sterrenhemel")),
+    ("met luxe wellness",
+     ("wellnesscenter", "wellness")),
+    ("met binnenzwembad",
+     ("binnenzwembad", "zwembad")),
+    ("vlak bij het strand",
+     ("strand",)),
+]
+
+
+def _highlight(room: dict) -> str:
+    """Kies een aantrekkelijk kenmerk uit de beschrijving om in een tip te noemen."""
+    tekst = room.get("beschrijving", "").lower()
+    for omschrijving, sleutels in _HIGHLIGHTS:
+        if any(s in tekst for s in sleutels):
+            return omschrijving
+    return "met het vertrouwde Valk-comfort"
+
+
+@tool
+def suggereer_alternatief(criteria: str) -> str:
+    """
+    Zoek een aantrekkelijk alternatief net boven het opgegeven budget (upsell).
+
+    Gebruik dit wanneer er geen kamers binnen het budget (max_prijs) passen, of
+    om de gast een net iets luxere kamer voor te stellen. Past dezelfde filters
+    toe als filter_kamers — behalve de prijs — en kiest de goedkoopste kamer die
+    net buiten het budget valt, met een aantrekkelijk kenmerk als verkoopargument.
+
+    Verwacht dezelfde JSON-criteria als filter_kamers.
+    Geeft een vriendelijke aanbevelingszin terug, of een lege string als er
+    geen budget is opgegeven of geen zinvol alternatief bestaat.
+    """
+    criteria_dict = _parse_criteria(criteria)
+    criteria_dict = {k: v for k, v in criteria_dict.items() if v is not None}
+
+    if "max_prijs" not in criteria_dict:
+        return ""
+    try:
+        budget = int(criteria_dict["max_prijs"])
+    except (ValueError, TypeError):
+        return ""
+
+    # Alle harde filters behalve de prijs toepassen
+    kandidaten = list(ROOMS)
+    if criteria_dict.get("ontbijt"):
+        kandidaten = [r for r in kandidaten if r["ontbijt"]]
+    if criteria_dict.get("parkeren"):
+        kandidaten = [r for r in kandidaten if r["parkeren"]]
+    if criteria_dict.get("huisdieren"):
+        kandidaten = [r for r in kandidaten if r["huisdieren"]]
+    if "capaciteit" in criteria_dict:
+        gewenst = int(criteria_dict["capaciteit"])
+        kandidaten = [r for r in kandidaten if r["capaciteit"] >= gewenst]
+    if "locatie" in criteria_dict:
+        zoekterm = criteria_dict["locatie"].lower()
+        kandidaten = [r for r in kandidaten if zoekterm in r["locatie"].lower()]
+    if "type" in criteria_dict:
+        zoekterm = criteria_dict["type"].lower()
+        kandidaten = [r for r in kandidaten if zoekterm in r["type"].lower()]
+
+    # Alleen kamers nét boven het budget zijn interessant als alternatief
+    boven_budget = sorted(
+        (r for r in kandidaten if r["prijs_per_nacht"] > budget),
+        key=lambda r: r["prijs_per_nacht"],
+    )
+    if not boven_budget:
+        return ""
+
+    beste = boven_budget[0]
+    verschil = beste["prijs_per_nacht"] - budget
+    return (
+        f"Tip: voor slechts EUR {verschil} per nacht meer kunt u verblijven in "
+        f"{beste['naam']} ({beste['locatie']}) {_highlight(beste)} "
+        f"— EUR {beste['prijs_per_nacht']}/nacht."
+    )
+
+
 @tool
 def rangschik_kamers(kamers_json: str) -> str:
     """
