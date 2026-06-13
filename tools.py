@@ -145,7 +145,7 @@ def suggereer_alternatief(criteria: str) -> str:
 
     Gebruik dit wanneer er geen kamers binnen het budget (max_prijs) passen, of
     om de gast een net iets luxere kamer voor te stellen. Past dezelfde filters
-    toe als filter_kamers — behalve de prijs — en kiest de goedkoopste kamer die
+    toe als filter_kamers - behalve de prijs - en kiest de goedkoopste kamer die
     net buiten het budget valt, met een aantrekkelijk kenmerk als verkoopargument.
 
     Verwacht dezelfde JSON-criteria als filter_kamers.
@@ -193,7 +193,7 @@ def suggereer_alternatief(criteria: str) -> str:
     return (
         f"Tip: voor slechts EUR {verschil} per nacht meer kunt u verblijven in "
         f"{beste['naam']} ({beste['locatie']}) {_highlight(beste)} "
-        f"— EUR {beste['prijs_per_nacht']}/nacht."
+        f"- EUR {beste['prijs_per_nacht']}/nacht."
     )
 
 
@@ -257,9 +257,9 @@ def valideer_aanbeveling(aanbeveling: str) -> str:
         elif aanbeveling.startswith("{"):
             kamer = json.loads(aanbeveling)
         else:
-            # Tekst-output (bijv. van rangschik_kamers) — basiscontrole
+            # Tekst-output (bijv. van rangschik_kamers) - basiscontrole
             if "EUR" in aanbeveling and any(t in aanbeveling for t in ["kamer", "suite", "Kamer", "Suite"]):
-                return "[OK] Aanbeveling bevat prijs en kamertype — tekst-output goedgekeurd voor presentatie."
+                return "[OK] Aanbeveling bevat prijs en kamertype - tekst-output goedgekeurd voor presentatie."
             return "[LET OP] Aanbeveling is in tekstformaat maar mist prijs of kamertype. Controleer de output."
     except (json.JSONDecodeError, ValueError, IndexError):
         return "[LET OP] Kon aanbeveling niet verwerken als JSON. Controleer het formaat."
