@@ -293,6 +293,10 @@ async function stuurBericht() {
   verstuurKnop.disabled = true;
   invoer.disabled = true;
   const typing = toonTyping();
+  // Minimale tijd dat de "..."-animatie zichtbaar blijft, zodat ook snelle
+  // (regelgebaseerde) antwoorden zoals budget/ja-nee de animatie tonen.
+  const MIN_TYPING = 800;
+  const start = Date.now();
 
   try {
     const res = await fetch('/chat', {
@@ -301,9 +305,13 @@ async function stuurBericht() {
       body: JSON.stringify({ message: tekst }),
     });
     const data = await res.json();
+    const resterend = MIN_TYPING - (Date.now() - start);
+    if (resterend > 0) await new Promise(r => setTimeout(r, resterend));
     typing.remove();
     voegBerichtToe('bot', data.reply);
   } catch (err) {
+    const resterend = MIN_TYPING - (Date.now() - start);
+    if (resterend > 0) await new Promise(r => setTimeout(r, resterend));
     typing.remove();
     voegBerichtToe('bot', 'Er ging iets mis met de verbinding. Probeer het opnieuw.');
   } finally {
