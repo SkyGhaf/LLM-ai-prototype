@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Van der Valk Hotels &amp; Restaurants — AI Kamerassistent (demo)</title>
+<meta name="description" content="Portfolio-demo: AI-agent die hotelgasten via een gesprek de perfecte kamer aanraadt. Gebouwd met LangChain, een lokaal LLM (Ollama) en een FAISS-vectordatabase.">
+<style>
+  :root {
+    --vdv-navy: #16243d;
+    --vdv-navy-light: #22365c;
+    --vdv-gold: #c8a45c;
+    --vdv-cream: #f7f4ee;
+    --vdv-text: #2b2b2b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--vdv-text); background: #fff; }
+
+  /* ---------- Portfolio-balk ---------- */
+  .portfolio-balk {
+    background: #0e1729; color: rgba(255,255,255,0.92);
+    text-align: center; padding: 0.5rem 6vw; font-size: 0.82rem;
+    border-bottom: 1px solid rgba(200,164,92,0.35);
+  }
+  .portfolio-balk strong { color: var(--vdv-gold); }
+  .portfolio-balk a { color: var(--vdv-gold); text-decoration: none; }
+  .portfolio-balk a:hover { text-decoration: underline; }
+
+  /* ---------- Navigatie ---------- */
+  nav {
+    background: var(--vdv-navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 6vw;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: Georgia, serif; font-size: 1.35rem; letter-spacing: 0.5px; }
+  .logo span { color: var(--vdv-gold); }
+  nav ul { display: flex; gap: 2rem; list-style: none; }
+  nav a { color: #fff; text-decoration: none; font-size: 0.95rem; opacity: 0.85; }
+  nav a:hover { opacity: 1; color: var(--vdv-gold); }
+  .btn-book {
+    background: var(--vdv-gold); color: var(--vdv-navy);
+    padding: 0.55rem 1.3rem; border-radius: 4px; font-weight: 600;
+    text-decoration: none; font-size: 0.95rem; border: none; cursor: pointer;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: linear-gradient(rgba(22,36,61,0.55), rgba(22,36,61,0.75)),
+                url('https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1600&q=70') center/cover;
+    color: #fff;
+    text-align: center;
+    padding: 7rem 6vw 8rem;
+  }
+  .hero h1 { font-family: Georgia, serif; font-size: 2.8rem; margin-bottom: 0.6rem; }
+  .hero p { font-size: 1.2rem; font-style: italic; color: var(--vdv-gold); }
+  .hero .cta {
+    display: inline-block; margin-top: 1.6rem; background: var(--vdv-gold);
+    color: var(--vdv-navy); padding: 0.7rem 1.6rem; border-radius: 4px;
+    font-weight: 600; border: none; cursor: pointer; font-size: 1rem;
+  }
+
+  /* ---------- USP-balk ---------- */
+  .usps {
+    display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap;
+    background: var(--vdv-cream);
+    padding: 1.6rem 6vw;
+    font-size: 0.95rem;
+  }
+  .usps div { display: flex; align-items: center; gap: 0.5rem; }
+
+  /* ---------- Secties ---------- */
+  .sectie { padding: 4rem 6vw; }
+  .sectie h2 { font-family: Georgia, serif; font-size: 1.9rem; color: var(--vdv-navy); margin-bottom: 0.4rem; }
+  .sectie .sub { color: #777; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+  .kaart {
+    border: 1px solid #e8e2d6; border-radius: 8px; overflow: hidden;
+    transition: box-shadow 0.2s;
+    background: #fff;
+  }
+  .kaart:hover { box-shadow: 0 6px 18px rgba(22,36,61,0.12); }
+  .kaart .foto {
+    height: 150px;
+    background: url('vdv.jpeg') center/cover no-repeat;
+  }
+  .kaart .inhoud { padding: 1rem 1.1rem 1.2rem; }
+  .kaart h3 { font-size: 1.05rem; color: var(--vdv-navy); margin-bottom: 0.3rem; }
+  .kaart p { font-size: 0.88rem; color: #666; margin-bottom: 0.6rem; }
+  .kaart .prijs { color: var(--vdv-gold); font-weight: 700; }
+
+  /* ---------- Over de techniek (portfolio) ---------- */
+  .tech { background: var(--vdv-cream); }
+  .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+  .tech-kaart { background: #fff; border: 1px solid #e8e2d6; border-radius: 8px; padding: 1.2rem 1.3rem; }
+  .tech-kaart h3 { color: var(--vdv-navy); font-size: 1rem; margin-bottom: 0.4rem; }
+  .tech-kaart p { font-size: 0.88rem; color: #555; line-height: 1.5; }
+  .stack { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+  .stack span {
+    background: var(--vdv-navy); color: #fff; font-size: 0.78rem;
+    padding: 0.3rem 0.8rem; border-radius: 999px;
+  }
+
+  footer {
+    background: var(--vdv-navy); color: rgba(255,255,255,0.7);
+    text-align: center; padding: 2rem 6vw; font-size: 0.85rem;
+  }
+  footer a { color: var(--vdv-gold); text-decoration: none; }
+
+  /* ---------- Chatbot-widget ---------- */
+  #chat-knop {
+    position: fixed; bottom: 24px; right: 24px; z-index: 999;
+    width: 62px; height: 62px; border-radius: 50%;
+    background: var(--vdv-navy); color: #fff; border: 2px solid var(--vdv-gold);
+    font-size: 1.6rem; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    transition: transform 0.15s;
+  }
+  #chat-knop:hover { transform: scale(1.08); }
+
+  #chat-venster {
+    position: fixed; bottom: 100px; right: 24px; z-index: 998;
+    width: 370px; max-width: calc(100vw - 32px);
+    height: 540px; max-height: calc(100vh - 130px);
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    display: none; flex-direction: column; overflow: hidden;
+  }
+  #chat-venster.open { display: flex; }
+
+  .chat-kop {
+    background: var(--vdv-navy); color: #fff;
+    padding: 0.9rem 1.1rem;
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+  .chat-kop .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--vdv-gold); display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+  .chat-kop .titel { font-weight: 600; font-size: 0.98rem; }
+  .chat-kop .status { font-size: 0.75rem; color: #9fe6a0; }
+  .chat-kop .reset {
+    margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.7);
+    cursor: pointer; font-size: 0.78rem; text-decoration: underline;
+  }
+
+  .demo-strook {
+    background: #fbf3df; color: #8a6d2f; font-size: 0.72rem;
+    text-align: center; padding: 0.4rem 0.8rem; border-bottom: 1px solid #ecdfbf;
+  }
+
+  #chat-berichten {
+    flex: 1; overflow-y: auto; padding: 1rem;
+    background: var(--vdv-cream);
+    display: flex; flex-direction: column; gap: 0.6rem;
+  }
+  .bericht {
+    max-width: 85%; padding: 0.6rem 0.85rem; border-radius: 12px;
+    font-size: 0.88rem; line-height: 1.45; white-space: pre-wrap;
+  }
+  .bericht.bot {
+    background: #fff; border: 1px solid #e6dfd2;
+    border-bottom-left-radius: 3px; align-self: flex-start;
+  }
+  .bericht.gast {
+    background: var(--vdv-navy); color: #fff;
+    border-bottom-right-radius: 3px; align-self: flex-end;
+  }
+  .typing { display: flex; gap: 4px; padding: 0.7rem 0.9rem; }
+  .typing span {
+    width: 7px; height: 7px; border-radius: 50%; background: #b5a98f;
+    animation: blink 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+  .snel-antwoorden { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0 1rem 0.5rem; background: var(--vdv-cream); }
+  .snel-antwoorden button {
+    border: 1px solid var(--vdv-gold); background: #fff; color: var(--vdv-navy);
+    border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.78rem; cursor: pointer;
+  }
+  .snel-antwoorden button:hover { background: var(--vdv-gold); color: #fff; }
+
+  .chat-invoer {
+    display: flex; border-top: 1px solid #e6dfd2; background: #fff;
+  }
+  .chat-invoer input {
+    flex: 1; border: none; padding: 0.85rem 1rem; font-size: 0.9rem; outline: none;
+  }
+  .chat-invoer button {
+    border: none; background: var(--vdv-navy); color: var(--vdv-gold);
+    padding: 0 1.2rem; font-size: 1.1rem; cursor: pointer;
+  }
+  .chat-invoer button:disabled { opacity: 0.5; cursor: wait; }
+</style>
+</head>
+<body>
+
+<div class="portfolio-balk">
+  <strong>Portfolio-demo</strong> · AI-kamerassistent gebouwd met LangChain · Ollama · FAISS —
+  <a href="https://github.com/Rames321/LLM-ai-prototype" target="_blank" rel="noopener">broncode op GitHub</a>
+</div>
+
+<nav>
+  <div class="logo">VAN DER VALK <span>HOTELS</span></div>
+  <ul>
+    <li><a href="#hotels">Hotels</a></li>
+    <li><a href="#techniek">Over de techniek</a></li>
+    <li><a href="#" onclick="openChat(); return false;">Kamerassistent</a></li>
+  </ul>
+  <button class="btn-book" onclick="openChat()">Probeer de assistent</button>
+</nav>
+
+<header class="hero">
+  <h1>Verrassend vanzelfsprekend</h1>
+  <p>Dezelfde gastvrijheid, nu met persoonlijk kameradvies van onze AI-assistent</p>
+  <br>
+  <button class="cta" onclick="openChat()">💬 Start het voorbeeldgesprek</button>
+</header>
+
+<div class="usps">
+  <div>🅿️ Gratis parkeren</div>
+  <div>🍳 Live Cooking ontbijt</div>
+  <div>💆 Wellness &amp; zwembad</div>
+  <div>🐕 Huisdiervriendelijk</div>
+  <div>✓ Beste prijsgarantie</div>
+</div>
+
+<section class="sectie" id="hotels">
+  <h2>Onze hotels</h2>
+  <p class="sub">Een greep uit ruim 40 locaties in Nederland — vraag onze kamerassistent naar beschikbaarheid.</p>
+  <div class="grid">
+    <div class="kaart"><div class="foto"></div><div class="inhoud">
+      <h3>Den Haag - Nootdorp</h3><p>Binnenzwembad, dichtbij Scheveningen en historisch Delft.</p>
+      <span class="prijs">vanaf € 115 per nacht</span></div></div>
+    <div class="kaart"><div class="foto"></div><div class="inhoud">
+      <h3>Amsterdam Zuidas</h3><p>Skyline-uitzicht vanaf de hoogste etages, op de Zuidas.</p>
+      <span class="prijs">vanaf € 159 per nacht</span></div></div>
+    <div class="kaart"><div class="foto"></div><div class="inhoud">
+      <h3>Spier - Dwingeloo</h3><p>Wellnesscenter midden in Nationaal Park Dwingelderveld.</p>
+      <span class="prijs">vanaf € 119 per nacht</span></div></div>
+    <div class="kaart"><div class="foto"></div><div class="inhoud">
+      <h3>Akersloot</h3><p>Aan het Alkmaardermeer, binnenzwembad, sauna en wateruitzicht.</p>
+      <span class="prijs">vanaf € 109 per nacht</span></div></div>
+    <div class="kaart"><div class="foto"></div><div class="inhoud">
+      <h3>Kasteel TerWorm</h3><p>Romantisch kasteelhotel op eigen landgoed bij Heerlen.</p>
+      <span class="prijs">vanaf € 189 per nacht</span></div></div>
+    <div class="kaart"><div class="foto"></div><div class="inhoud">
+      <h3>Tilburg</h3><p>Dichtbij de Efteling en Safaripark Beekse Bergen, gezinsvriendelijk.</p>
+      <span class="prijs">vanaf € 105 per nacht</span></div></div>
+  </div>
+</section>
+
+<section class="sectie tech" id="techniek">
+  <h2>Over de techniek</h2>
+  <p class="sub">Wat er onder de motorkap van deze AI-kamerassistent gebeurt.</p>
+  <div class="tech-grid">
+    <div class="tech-kaart">
+      <h3>🧭 Vaste workflow-orchestratie</h3>
+      <p>Python stuurt een 6-staps gesprek aan (begroeting → vragen → samenvatting → zoeken → tonen → feedback) als state machine. Betrouwbaar en voorspelbaar.</p>
+    </div>
+    <div class="tech-kaart">
+      <h3>🗣️ LLM voor tekstbegrip</h3>
+      <p>Een lokaal taalmodel (llama3.2 via Ollama) haalt criteria uit vrije tekst — "voor 2 personen onder de 130" wordt automatisch herkend.</p>
+    </div>
+    <div class="tech-kaart">
+      <h3>🔎 RAG met vectordatabase</h3>
+      <p>Kamerbeschrijvingen staan als embeddings in een FAISS-vectorstore, zodat sfeerwensen ("rust", "uitzicht", "wellness") semantisch gematcht worden.</p>
+    </div>
+    <div class="tech-kaart">
+      <h3>🛠️ Tools &amp; validatie</h3>
+      <p>LangChain-tools filteren, rangschikken en valideren elke aanbeveling vóór ze getoond wordt — geen verzonnen prijzen of kamers.</p>
+    </div>
+  </div>
+  <div class="stack">
+    <span>Python</span><span>LangChain</span><span>Ollama (llama3.2)</span>
+    <span>FAISS</span><span>HuggingFace embeddings</span><span>Flask</span><span>Streamlit</span>
+  </div>
+</section>
+
+<footer>
+  Van der Valk Hotels &amp; Restaurants — <em>schoolprototype / portfolio-demo, niet de echte website</em>.<br>
+  AI Agents (DEAI), De Haagse Hogeschool · Rames Saljuqi e.a. ·
+  <a href="https://github.com/Rames321/LLM-ai-prototype" target="_blank" rel="noopener">GitHub</a>
+</footer>
+
+<!-- ---------- Chatbot-widget ---------- -->
+<button id="chat-knop" onclick="toggleChat()" aria-label="Open chat">💬</button>
+
+<div id="chat-venster">
+  <div class="chat-kop">
+    <div class="avatar">🦜</div>
+    <div>
+      <div class="titel">Valk Kamerassistent</div>
+      <div class="status">● online</div>
+    </div>
+    <button class="reset" onclick="resetChat()">opnieuw</button>
+  </div>
+  <div class="demo-strook">
+    Demomodus — opgenomen voorbeeldgesprek. De live AI draait lokaal (Ollama + LangChain + FAISS).
+  </div>
+  <div id="chat-berichten"></div>
+  <div class="snel-antwoorden" id="snel-antwoorden"></div>
+  <div class="chat-invoer">
+    <input id="chat-input" type="text" placeholder="Typ of klik op een suggestie..."
+           onkeydown="if(event.key==='Enter') stuurBericht()">
+    <button id="verstuur-knop" onclick="stuurBericht()">➤</button>
+  </div>
+</div>
+
+<script>
+const venster = document.getElementById('chat-venster');
+const berichten = document.getElementById('chat-berichten');
+const invoer = document.getElementById('chat-input');
+const verstuurKnop = document.getElementById('verstuur-knop');
+const snelAntwoorden = document.getElementById('snel-antwoorden');
+
+// ---- Opgenomen voorbeeldgesprek -------------------------------------------
+// Spiegelt het gedrag van de echte agent (zie agent.py) met echte kamerdata.
+// Elke stap: de gast-zin (suggestiechip) + het antwoord van de assistent.
+const BEGROETING =
+  'Goedendag! 👋 Ik ben de digitale kamerassistent van Van der Valk. ' +
+  'Ik help u graag de perfecte kamer te vinden. Waar bent u naar op zoek?';
+
+const SCRIPT = [
+  {
+    gast: 'Ik wil een weekendje wellness, max 200 euro',
+    bot:
+      'Wat fijn! Ik heb genoteerd: max € 200 per nacht, met een wens voor wellness. ' +
+      'Voor hoeveel personen zoekt u een kamer?'
+  },
+  {
+    gast: '2 personen',
+    bot: 'Helder, 2 personen. Wilt u ontbijt inbegrepen? (ja/nee)'
+  },
+  {
+    gast: 'ja, graag met ontbijt',
+    bot: 'Genoteerd. Heeft u een parkeerplaats nodig? (ja/nee)'
+  },
+  {
+    gast: 'nee hoor',
+    bot:
+      'Dank u wel! Samengevat zoekt u: 2 personen, max € 200/nacht, met ontbijt, ' +
+      'speciale wens: ‘wellness’.\n\n' +
+      'Op basis van uw wensen vond ik deze top 3:\n\n' +
+      '1. Deluxe Kamer — Hotel Heerlen — € 150/nacht\n' +
+      '   Wellnesscenter met zwembad in het Limburgse heuvelland, incl. Live Cooking ontbijt.\n\n' +
+      '2. Deluxe Kamer — Hotel Akersloot — € 154/nacht\n' +
+      '   Aan het Alkmaardermeer met binnenzwembad, sauna en fitness; uitzicht over het water.\n\n' +
+      '3. Deluxe Kamer — Hotel Spier-Dwingeloo — € 164/nacht\n' +
+      '   Wellnesscenter midden in Nationaal Park Dwingelderveld: volledige rust en natuur.\n\n' +
+      '✨ Net iets luxer? Suite — Kasteel TerWorm (€ 304) biedt een vorstelijk verblijf met kasteeltuinen.\n\n' +
+      '✓ Validatie: aanbeveling geldig (alle kamers ≤ € 200, met ontbijt, 2 personen).\n\n' +
+      'Bent u tevreden, of wilt u iets aanpassen?'
+  },
+  {
+    gast: 'Hebben deze hotels ook een zwembad?',
+    bot:
+      'Zeker! Hotel Heerlen en Akersloot beschikken beide over een binnenzwembad, ' +
+      'en bij Spier-Dwingeloo hoort een volledig wellnesscenter. Inchecken kan vanaf 15:00 uur. ' +
+      'Wilt u verder nog iets aanpassen, of zal ik deze top 3 voor u vasthouden?'
+  },
+  {
+    gast: 'Perfect, bedankt!',
+    bot:
+      'Wat fijn! U kunt de kamer aan de balie of telefonisch reserveren. ' +
+      'Nog een prettige dag en graag tot ziens bij Van der Valk! 🦜'
+  }
+];
+
+let stap = 0;        // index in SCRIPT van de eerstvolgende gast-beurt
+let begroet = false;
+let bezig = false;
+
+function toggleChat() {
+  venster.classList.toggle('open');
+  if (venster.classList.contains('open')) {
+    if (!begroet) {
+      begroet = true;
+      voegBerichtToe('bot', BEGROETING);
+      toonSuggesties();
+    }
+    invoer.focus();
+  }
+}
+function openChat() { if (!venster.classList.contains('open')) toggleChat(); }
+
+function voegBerichtToe(rol, tekst) {
+  const div = document.createElement('div');
+  div.className = 'bericht ' + rol;
+  div.textContent = tekst;
+  berichten.appendChild(div);
+  berichten.scrollTop = berichten.scrollHeight;
+  return div;
+}
+
+function toonTyping() {
+  const div = document.createElement('div');
+  div.className = 'bericht bot typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  berichten.appendChild(div);
+  berichten.scrollTop = berichten.scrollHeight;
+  return div;
+}
+
+// Toon de eerstvolgende gast-zin als klikbare suggestie
+function toonSuggesties() {
+  snelAntwoorden.innerHTML = '';
+  if (stap < SCRIPT.length) {
+    const knop = document.createElement('button');
+    knop.textContent = SCRIPT[stap].gast;
+    knop.onclick = () => verstuur(SCRIPT[stap].gast);
+    snelAntwoorden.appendChild(knop);
+    snelAntwoorden.style.display = 'flex';
+  } else {
+    const knop = document.createElement('button');
+    knop.textContent = '🔄 Opnieuw beginnen';
+    knop.onclick = resetChat;
+    snelAntwoorden.appendChild(knop);
+    snelAntwoorden.style.display = 'flex';
+  }
+}
+
+async function verstuur(tekst) {
+  if (bezig || !tekst) return;
+  bezig = true;
+  invoer.value = '';
+  snelAntwoorden.style.display = 'none';
+  voegBerichtToe('gast', tekst);
+  verstuurKnop.disabled = true;
+  invoer.disabled = true;
+
+  // Bepaal het antwoord uit het script (off-script invoer volgt gewoon de demo)
+  let antwoord;
+  if (stap < SCRIPT.length) {
+    antwoord = SCRIPT[stap].bot;
+    stap++;
+  } else {
+    antwoord = 'Dit voorbeeldgesprek is afgerond. Klik op "opnieuw" om het opnieuw te bekijken, ' +
+               'of bekijk de werkende versie op GitHub.';
+  }
+
+  const typing = toonTyping();
+  await new Promise(r => setTimeout(r, 850));   // typing-animatie
+  typing.remove();
+  voegBerichtToe('bot', antwoord);
+
+  verstuurKnop.disabled = false;
+  invoer.disabled = false;
+  bezig = false;
+  toonSuggesties();
+  invoer.focus();
+}
+
+function stuurBericht() {
+  const tekst = invoer.value.trim();
+  if (tekst) verstuur(tekst);
+  else if (stap < SCRIPT.length) verstuur(SCRIPT[stap].gast); // leeg = volg de demo
+}
+
+function resetChat() {
+  berichten.innerHTML = '';
+  stap = 0;
+  begroet = true;
+  voegBerichtToe('bot', BEGROETING);
+  toonSuggesties();
+  invoer.focus();
+}
+
+// Chat opent automatisch zodra de pagina geladen is
+window.addEventListener('DOMContentLoaded', openChat);
+</script>
+
+</body>
+</html>
