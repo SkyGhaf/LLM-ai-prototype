@@ -1,5 +1,5 @@
 """
-Hotel Kamer Aanbeveling Agent — kern van de workflow.
+Hotel Kamer Aanbeveling Agent - kern van de workflow.
 
 Architectuur: Python orkestreert de vaste 6-staps workflow (state machine),
 het LLM (llama3.2:1b via Ollama) interpreteert vrije tekst van de gast en
@@ -18,7 +18,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
 import tools as tools_module
-from tools import filter_kamers, rangschik_kamers, valideer_aanbeveling
+from tools import filter_kamers, rangschik_kamers, valideer_aanbeveling, suggereer_alternatief
 from vectorstore import get_or_build_vectorstore
 from rooms_data import ROOMS
 
@@ -40,7 +40,7 @@ Bericht: "ik zoek iets voor 2 personen onder de 100 euro" -> {"capaciteit": 2, "
 Bericht: "met ontbijt graag, in Den Haag" -> {"ontbijt": true, "locatie": "Den Haag"}
 Bericht: "hallo" -> {}"""
 
-# Vaste vragen voor stap 2 — telkens één veld dat nog onbekend is
+# Vaste vragen voor stap 2 - telkens één veld dat nog onbekend is
 VRAGEN = [
     ("capaciteit", "Voor hoeveel personen zoekt u een kamer?"),
     ("max_prijs", "Wat is uw maximale budget per nacht (in euro)?"),
@@ -148,7 +148,7 @@ class HotelAgent:
 
     @staticmethod
     def _valideer_extractie(criteria: dict, tekst: str) -> dict:
-        """Kleine modellen verzinnen soms velden — accepteer alleen velden
+        """Kleine modellen verzinnen soms velden - accepteer alleen velden
         waarvoor daadwerkelijk een aanwijzing in de gasttekst staat."""
         lower = tekst.lower()
         bewijs = {
@@ -188,7 +188,7 @@ class HotelAgent:
 
     def _vang_wensen(self, tekst: str) -> bool:
         """Herken sfeer-/kenmerkwensen ('mooi uitzicht', 'romantisch') en sla
-        alleen de wenswoorden op als semantische zoekopdracht — de hele zin
+        alleen de wenswoorden op als semantische zoekopdracht - de hele zin
         meegeven verwatert de zoekresultaten. Wensen stapelen over beurten."""
         lower = tekst.lower()
         gevonden = [w for w in WENS_WOORDEN if re.search(rf"\b{w}", lower)]
@@ -308,7 +308,7 @@ class HotelAgent:
             if waarde is not None and 20 <= waarde <= 2000:
                 self.criteria["max_prijs"] = waarde
         elif veld == "locatie":
-            # Alleen bekende plaatsnamen accepteren — voorkomt dat 'ja' of
+            # Alleen bekende plaatsnamen accepteren - voorkomt dat 'ja' of
             # ander los antwoord als locatie wordt opgeslagen
             loc = self._herken_locatie(tekst)
             if loc:
@@ -352,8 +352,11 @@ class HotelAgent:
 
         if gevonden.startswith("Geen kamers"):
             logger.info("filter_kamers: geen resultaten")
+            logger.info("TOOL suggereer_alternatief aangeroepen (geen resultaten)")
+            suggestie = suggereer_alternatief.invoke(criteria_json)
+            tip = f"\n\n{suggestie}" if suggestie else ""
             return (
-                f"{gevonden}\n\n"
+                f"{gevonden}{tip}\n\n"
                 "U kunt bijvoorbeeld zeggen: 'verhoog mijn budget naar 150' of 'ontbijt hoeft niet'."
             )
 
@@ -368,8 +371,15 @@ class HotelAgent:
             return f"Er ging iets mis bij het valideren van de aanbeveling: {validatie}"
 
         self.laatste_resultaat = top3
+
+        # Zachte upsell: een net iets luxere kamer boven het budget aanbevelen
+        logger.info("TOOL suggereer_alternatief aangeroepen (upsell)")
+        suggestie = suggereer_alternatief.invoke(criteria_json)
+        upsell = f"{suggestie}\n\n" if suggestie else ""
+
         return (
             f"Op basis van uw wensen ({self._samenvatting()}):\n\n{top3}\n"
+            f"{upsell}"
             f"Validatie: {validatie}\n\n"
             "Bent u tevreden met deze aanbevelingen? "
             "Of wilt u iets aanpassen (bijv. 'te duur', 'liever met ontbijt')?"
@@ -383,7 +393,7 @@ class HotelAgent:
         # Sfeerwensen ('mooi uitzicht') in elke fase opvangen voor semantisch zoeken
         wens_gevonden = self._vang_wensen(tekst)
 
-        # Stap 1 — Begroeting: pak meteen criteria mee die de gast al noemt
+        # Stap 1 - Begroeting: pak meteen criteria mee die de gast al noemt
         if self.fase == "begroeting":
             self.criteria.update(self._extraheer_criteria(tekst))
             self.fase = "vragen"
@@ -399,7 +409,7 @@ class HotelAgent:
             self.fase = "zoeken"
             return begroeting + self._zoek_en_toon_overgang()
 
-        # Stap 2 — Vragenronde: huidige vraag verwerken, volgende stellen
+        # Stap 2 - Vragenronde: huidige vraag verwerken, volgende stellen
         if self.fase == "vragen":
             veld, _ = VRAGEN[self.vraag_index]
             # Vrije vraag van de gast? Beantwoord die en herhaal daarna onze vraag.
@@ -426,7 +436,7 @@ class HotelAgent:
                 return vraag
             return self._zoek_en_toon_overgang()
 
-        # Stap 6 — Feedbackloop: wensen bijstellen en opnieuw zoeken
+        # Stap 6 - Feedbackloop: wensen bijstellen en opnieuw zoeken
         if self.fase == "feedback":
             lower = tekst.lower()
             # Vrije vraag over de aanbevelingen of het hotel? Beantwoord die.
@@ -437,7 +447,7 @@ class HotelAgent:
                     "Wilt u verder nog iets aanpassen aan uw zoekopdracht, of bent u tevreden?"
                 )
             if any(w in lower for w in ("tevreden", "prima", "goed zo", "perfect", "top", "bedankt", "boek")):
-                logger.info("Gast tevreden — workflow afgerond")
+                logger.info("Gast tevreden - workflow afgerond")
                 return (
                     "Wat fijn! U kunt de kamer aan de balie of telefonisch reserveren. "
                     "Nog een prettige dag en graag tot ziens!"
@@ -479,7 +489,7 @@ class HotelAgent:
                     self.criteria.update(aanpassing)
                 return "Ik pas uw wensen aan en zoek opnieuw...\n\n" + self._zoek_en_toon()
 
-            # Geen herkenbare aanpassing — laat het LLM vrij reageren
+            # Geen herkenbare aanpassing - laat het LLM vrij reageren
             antwoord = self._beantwoord_vraag(tekst)
             return (
                 f"{antwoord}\n\n"
@@ -487,7 +497,7 @@ class HotelAgent:
                 "'maximaal 100 euro' of 'liever in Amsterdam'."
             )
 
-        # Vangnet — zou niet moeten gebeuren
+        # Vangnet - zou niet moeten gebeuren
         return "Kunt u dat anders formuleren?"
 
     def _zoek_en_toon_overgang(self) -> str:

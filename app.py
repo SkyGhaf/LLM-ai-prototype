@@ -1,5 +1,5 @@
 """
-Hotel Kamer Aanbeveling Agent — Web UI (Streamlit)
+Hotel Kamer Aanbeveling Agent - Web UI (Streamlit)
 
 Start: python -m streamlit run app.py
 Vereiste: Ollama actief met llama3.2:1b
@@ -10,7 +10,7 @@ import streamlit as st
 from agent import create_hotel_agent
 
 st.set_page_config(
-    page_title="Hotel Den Haag — Kamer Assistent",
+    page_title="Hotel Den Haag - Kamer Assistent",
     page_icon="🏨",
     layout="centered",
 )
@@ -64,7 +64,7 @@ if "agent" not in st.session_state:
             "role": "assistant",
             "content": (
                 "Welkom! 👋 Ik help u graag de perfecte hotelkamer te vinden. "
-                "Vertel me waar u naar op zoek bent — bijvoorbeeld: "
+                "Vertel me waar u naar op zoek bent - bijvoorbeeld: "
                 "*'Ik zoek een kamer voor 2 personen onder de 120 euro'*."
             ),
         }
@@ -83,7 +83,7 @@ with st.sidebar:
         for veld, waarde in st.session_state.agent.criteria.items():
             st.caption(f"**{veld}**: {waarde}")
     st.divider()
-    st.caption("Sprint 3 — LangChain + Ollama (llama3.2:1b) + FAISS")
+    st.caption("Sprint 3 - LangChain + Ollama (llama3.2:1b) + FAISS")
 
 # Chatgeschiedenis tonen
 for msg in st.session_state.messages:

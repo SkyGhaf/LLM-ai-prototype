@@ -25,7 +25,7 @@ def build_vectorstore(rooms: list) -> FAISS:
 
     docs = []
     for room in rooms:
-        tekst = f"{room['naam']} — {room['type']} in {room['locatie']}. {room['beschrijving']}"
+        tekst = f"{room['naam']} - {room['type']} in {room['locatie']}. {room['beschrijving']}"
         meta = {k: v for k, v in room.items() if k != "beschrijving"}
         docs.append(Document(page_content=tekst, metadata=meta))
 
@@ -46,7 +46,7 @@ def load_vectorstore() -> FAISS:
 def get_or_build_vectorstore(rooms: list) -> FAISS:
     """Laad de vectorstore als die al bestaat, anders bouw hem opnieuw op."""
     if os.path.exists(FAISS_PATH):
-        print("Bestaande vectorstore gevonden — wordt geladen...")
+        print("Bestaande vectorstore gevonden - wordt geladen...")
         return load_vectorstore()
     return build_vectorstore(rooms)
 

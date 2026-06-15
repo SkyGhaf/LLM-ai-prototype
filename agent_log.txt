@@ -1,4 +1,4 @@
-=== Hotel Agent sessie gestart: 2026-06-11 15:01:30 ===
+=== Hotel Agent sessie gestart: 2026-06-13 12:55:01 ===
 
 
 ================================================
@@ -14,6 +14,9 @@ Embeddings model laden (eenmalig ~80MB download)...
 Agent klaar! Begin het gesprek (bijv. 'Hallo, ik zoek een kamer').
 
 Gast: 
-Agent: Welkom! Wat fijn dat u bij ons hotel een kamer zoekt. Voor hoeveel personen zoekt u een kamer?
+Agent: Welkom bij Van der Valk! Wat fijn dat u bij ons een kamer zoekt. Voor hoeveel personen zoekt u een kamer?
+
+Gast: 
+Agent: Wat is uw maximale budget per nacht (in euro)?
 
 Gast: 

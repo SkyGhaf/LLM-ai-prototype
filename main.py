@@ -1,6 +1,6 @@
 """
 Hotel Kamer Aanbeveling Agent
-Sprint 3 — LangChain + Ollama (llama3.2:1b) + FAISS
+Sprint 3 - LangChain + Ollama (llama3.2:1b) + FAISS
 
 Start: python main.py
 Vereiste: Ollama actief met llama3.2:1b (`ollama pull llama3.2:1b`)

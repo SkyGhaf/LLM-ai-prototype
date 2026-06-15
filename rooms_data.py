@@ -1,4 +1,4 @@
-# Kamerdata van alle (open) Valk Exclusief hotels — gescraped van valkexclusief.nl/hotels
+# Kamerdata van alle (open) Valk Exclusief hotels - gescraped van valkexclusief.nl/hotels
 # De site toont 43 hotels; 'De Gouden Leeuw' (gesloten tot eind 2027) en
 # 'Maastricht-Maas' (in aanbouw) zijn weggelaten. Prijzen zijn indicatief.
 #
@@ -97,7 +97,7 @@ for _i, (_naam, _prov, _vanaf, _huisdieren, _kenmerken, _extra) in enumerate(HOT
 
     ROOMS.append({
         "id": f"VE{_i:03d}A",
-        "naam": f"Comfort Kamer — Hotel {_naam}",
+        "naam": f"Comfort Kamer - Hotel {_naam}",
         "type": "standard",
         "prijs_per_nacht": _vanaf,
         "locatie": _naam,
@@ -113,7 +113,7 @@ for _i, (_naam, _prov, _vanaf, _huisdieren, _kenmerken, _extra) in enumerate(HOT
 
     ROOMS.append({
         "id": f"VE{_i:03d}B",
-        "naam": f"Deluxe Kamer — Hotel {_naam}",
+        "naam": f"Deluxe Kamer - Hotel {_naam}",
         "type": "deluxe",
         "prijs_per_nacht": _vanaf + 45,
         "locatie": _naam,
@@ -130,7 +130,7 @@ for _i, (_naam, _prov, _vanaf, _huisdieren, _kenmerken, _extra) in enumerate(HOT
     if "suite" in _extra:
         ROOMS.append({
             "id": f"VE{_i:03d}C",
-            "naam": f"Suite — Hotel {_naam}",
+            "naam": f"Suite - Hotel {_naam}",
             "type": "suite",
             "prijs_per_nacht": _vanaf + 115,
             "locatie": _naam,
@@ -147,7 +147,7 @@ for _i, (_naam, _prov, _vanaf, _huisdieren, _kenmerken, _extra) in enumerate(HOT
     if "familie" in _extra:
         ROOMS.append({
             "id": f"VE{_i:03d}D",
-            "naam": f"Familiekamer — Hotel {_naam}",
+            "naam": f"Familiekamer - Hotel {_naam}",
             "type": "family",
             "prijs_per_nacht": _vanaf + 60,
             "locatie": _naam,

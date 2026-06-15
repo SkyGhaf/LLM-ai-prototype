@@ -154,3 +154,14 @@ Bent u tevreden met deze aanbevelingen? Of wilt u iets aanpassen (bijv. 'te duur
 15:03:27 [INFO] LLM-extractie gestart voor: 'ik zoek een kamer'
 15:03:41 [INFO] LLM-extractie resultaat (gevalideerd): {}
 15:03:41 [INFO] AGENT: Welkom! Wat fijn dat u bij ons hotel een kamer zoekt. Voor hoeveel personen zoekt u een kamer?
+12:49:49 [INFO] Sessie gestart
+12:49:49 [ERROR] Opstartfout: No module named 'langchain_ollama'
+12:55:01 [INFO] Sessie gestart
+12:56:52 [INFO] GAST: python webapp.py
+12:56:52 [INFO] Fase: begroeting | Criteria: {}
+12:56:52 [INFO] LLM-extractie gestart voor: 'python webapp.py'
+12:56:52 [WARNING] LLM-extractie mislukt (model 'llama3.2:1b' not found (status code: 404)), fallback op regelparser
+12:56:52 [INFO] AGENT: Welkom bij Van der Valk! Wat fijn dat u bij ons een kamer zoekt. Voor hoeveel personen zoekt u een kamer?
+12:56:54 [INFO] GAST: python webapp.py
+12:56:54 [INFO] Fase: vragen | Criteria: {}
+12:56:54 [INFO] AGENT: Wat is uw maximale budget per nacht (in euro)?
